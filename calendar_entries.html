@@ -1,0 +1,67 @@
+<html>
+<head>
+<style>
+	.calendar { font-family: "Lucida Grande",Sans-serif; width: 978px; font-size:15px; line-height:1.2em; border-collapse: collapse; }
+	.calendar tbody tr:first-child th { color: #505050; margin: 0 0 10px 0; }
+	.day_header { font-weight: normal; text-align: center; color: #757575; font-size: .8em; }
+	.calendar td { width: 14%; border:1px solid #CCC; height: 100px; vertical-align: top; padding: 2px; }
+	.calendar td:hover { background: #F3F3F3; }
+	.day_listing { display: block; text-align: right; font-size: .85em; color: #2C2C2C; padding: 2px 2px 0 0; }
+	div.today { ackground: #E9EFF7; height: 100%; } 
+	div.entry { font-size: .7em; border:1px solid #ddd; border-radius:6px; margin-bottom:2px; padding:1px 6px; background: lightblue; }
+	
+	/* Styling for the category div classes */
+	div.entry.category_name { background: lightgreen; }
+	div.entry.bridge { background: lightgreen; }
+</style>
+</head>
+<body>
+
+
+<!-- calendar_entries excepts almost all config settings from the ci calendar library -->
+{exp:calendar_entries:calendarize start_day="sunday" next_prev_url="{pre_base_path}" year="{pre_year}" month="{pre_month}"}
+
+	<!-- main channel entries tag with all fields and categories etc. -->
+	{exp:channel:entries channel="agenda" year="{pre_year}" month="{pre_month}" show_future_entries="yes" show_expired="yes" sort="asc" dynamic="no"}
+
+		<!-- item will be put inside the calendar template. See how we use categories to set the class for the div... 
+		     entry_id is to make every item unique, entry_date as timestamp should suffice, just be sure -->
+		{item id="{entry_id}" day="{entry_date}"}
+			<div class="entry{categories} {category_url_title}{/categories}">{title}</div>
+		{/item}
+	{/exp:channel:entries}
+	
+
+	<!-- the calendar template, hat-tip to Derek Allard for inspiration for this plugin and part of the css -->
+	{calendar_template}
+		{table_open}<table class="calendar">{/table_open}
+		{week_day_cell}<th class="day_header">{week_day}</th>{/week_day_cell}
+		{cal_cell_content}<span class="day_listing">{day}</span>{content}{/cal_cell_content}
+		{cal_cell_content_today}<div class="today"><span class="day_listing">{day}</span>{content}</div>{/cal_cell_content_today}
+		{cal_cell_no_content}<span class="day_listing">{day}</span>&nbsp;{/cal_cell_no_content}
+		{cal_cell_no_content_today}<div class="today"><span class="day_listing">{day}</span>&nbsp;</div>{/cal_cell_no_content_today}
+	{/calendar_template}
+
+{/exp:calendar_entries:calendarize}
+
+
+
+<div>
+	<p>Current: Year: {pre_year}, Month: {pre_month}</p>
+</div>
+
+
+<!-- 
+	// preload replace to make sure we have the current month and year in place
+	// Hat-tip to Lodewijk for tips on simple conditionals switching pre_load vars
+-->
+{if segment_3==""}{preload_replace:pre_year="{current_time format='%Y'}"}{/if}
+{if segment_4==""}{preload_replace:pre_month="{current_time format='%m'}"}{/if}
+{if segment_3!=""}{preload_replace:pre_year="{segment_3}"}{/if}
+{if segment_4!=""}{preload_replace:pre_month="{segment_4}"}{/if}
+
+<!-- 
+	// preload replace to set the base path 
+-->
+{preload_replace:pre_base_path="/{segment_1}/{segment_2}/"}
+
