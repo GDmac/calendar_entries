@@ -1,0 +1,41 @@
+<html>
+<head>
+<style>
+	body { font-family: "Lucida Grande",Sans-serif;}
+	.calendar { font-family: "Lucida Grande",Sans-serif; width: 978px; font-size:15px; line-height:1.2em; border-collapse: collapse; }
+	.calendar tbody tr:first-child th { color: #505050; margin: 0 0 10px 0; }
+	.day_header { font-weight: normal; text-align: center; color: #757575; font-size: .8em; }
+	.calendar td { width: 14%; border:1px solid #CCC; height: 100px; vertical-align: top; padding: 2px; }
+	.calendar td:hover { background: #F3F3F3; }
+	.day_listing { display: block; text-align: right; font-size: .85em; color: #2C2C2C; padding: 2px 2px 0 0; }
+	div.today { background: #E9EFF7; height: 100%; } 
+	div.entry { font-size: .7em; border:1px solid #ddd; border-radius:6px; margin-bottom:2px; padding:1px 6px; background: lightblue; }
+	
+	/* Styling for the category div classes */
+	div.entry.category_name { background: lightgreen; }
+	div.entry.bridge { background: lightgreen; }
+</style>
+</head>
+<body>
+
+
+{exp:calendar_entries:week start="{segment_3}" start_day="sunday" base_url="{pre_base_path}" parse="inward"}
+
+	{exp:calendar_entries:week_items}
+		{exp:channel:entries channel="agenda" start_on="{calendar_entries_start}" stop_before="{calendar_entries_end}" show_future_entries="yes" show_expired="yes" sort="asc" dynamic="no"}
+			{item id="{entry_id}" entry_date="{entry_date}" expiration_date="{expiration_date}"}
+				<div class="entry{categories} {category_url_title}{/categories}">{title}</div>
+			{/item}
+		{/exp:channel:entries}
+	{/exp:calendar_entries:week_items}
+
+<p>Viewing: {calendar_entries_start} - {calendar_entries_end}</p>
+
+{/exp:calendar_entries:week}
+
+
+<!-- 
+	// preload replace to set the base path 
+-->
+{preload_replace:pre_base_path="/{segment_1}/{segment_2}/"}
+
